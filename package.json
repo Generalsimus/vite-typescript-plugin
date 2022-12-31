@@ -1,0 +1,28 @@
+{
+  "name": "@vite/plugin-typescript",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "author": {
+    "name": "soso tsertsvadze",
+    "email": "sosotsertsvadze2@gmail.com"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build-types": "tsc ./index.ts --declaration --emitDeclarationOnly --declarationDir dist/ --p ./tsconfig",
+    "ss": "npm run build && npm run build-types",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "*",
+    "vite": "^4.0.0"
+  }
+}
