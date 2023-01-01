@@ -13,7 +13,7 @@ import { createPlugin } from "vite-typescript-plugin"
 export default defineConfig({
   plugins: [
     createPlugin({
-      name,       // plugin Name 
+      name,       // plugin name 
       options,    // ts.CompilerOptions 
       test,       // file test regexp 
       transforms, // ts.CustomTransformers
