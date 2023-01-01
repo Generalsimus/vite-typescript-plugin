@@ -1,15 +1,14 @@
 
 import ts from "typescript"
-import { CustomCompilerHost } from "./host"
+import { CustomCompilerHost } from "./host/"
 
 export interface Options {
-    options: ts.CompilerOptions
-    name: string | "typescript"
-    test: RegExp
-    transforms: ts.CustomTransformers
-    assignPluginOptions: object
+    options?: ts.CompilerOptions
+    name?: string | "typescript"
+    test?: RegExp
+    transforms?: ts.CustomTransformers
 }
-export const createPlugin = (options: Options) => {
+const createPlugin = (options: Options = {}) => {
     let workerHost: CustomCompilerHost | undefined
     const getWorkingHost = (rootFiles: string[]) => {
         if (workerHost === undefined) {
@@ -17,34 +16,26 @@ export const createPlugin = (options: Options) => {
         }
         return workerHost
     }
-    const testFileName = options.test || /.(([tj]sx?)|json)$/i
+    const name = options.name || "typescript"
+    const testFileName = options.test || /\.(((t|j)sx?)|json)$/i
     return {
-        name: options.name,
+        name: name,
         transform(code: string, fileName: string) {
-            if (!(testFileName.test(fileName))) {
-                return
+            if (testFileName.test(fileName)) {
+                const rootNames: string[] = [fileName];
+                const host = getWorkingHost(rootNames);
+
+                if (!host.fileCache.has(fileName)) {
+                    host.createProgram([fileName]);
+                }
+                host.fileCache.delete(fileName);
+
+                host.logDiagnosticsToViteError(this, host.getDiagnostics());
+                host.getCacheFileDetails(fileName).code = code;
+
+                return host.emitFileCode(fileName);
             }
-            const rootNames: string[] = [fileName]
-            const host = getWorkingHost(rootNames)
-
-            if (!host.fileCache.has(fileName)) {
-                host.createProgram(rootNames)
-            }
-            host.fileCache.delete(fileName);
-
-            host.getCacheFileDetails(fileName).code = code
-
-            host.logDiagnosticsToViteError(this, host.getDiagnostics())
-            return host.emitFileCode(fileName)
-        },
-        ...options.assignPluginOptions
+        }
     }
 }
-
-// "main": "./web/index.js",
-
-// "repository": {
-//   "type": "git",
-//   "url": "git+https://github.com/Generalsimus/KIX.git"
-// },
-// "homepage": "https://kixjs.ml/",
+export { createPlugin, createPlugin as default }

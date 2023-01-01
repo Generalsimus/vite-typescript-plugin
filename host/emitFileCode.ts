@@ -1,4 +1,4 @@
-import { CustomCompilerHost } from ".";
+import { CustomCompilerHost } from "./";
 
 export function emitFileCode(this: CustomCompilerHost, fileName: string) {
     let outputText: string = "";

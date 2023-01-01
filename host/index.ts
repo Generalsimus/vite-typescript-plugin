@@ -4,7 +4,6 @@ import { createProgram } from "./createProgram";
 import { logDiagnosticsToViteError } from "./logDiagnosticsToViteError";
 import { emitFileCode } from "./emitFileCode";
 import { getCompilerOptions } from "./getCompilerOptions";
-import { getDiagnosticToViteErrorText } from "./getDiagnosticToViteErrorText";
 import { readFile } from "./readFile";
 import { getCacheFileDetails } from "./getCacheFileDetails";
 import { getSourceFile } from "./getSourceFile";
@@ -22,6 +21,7 @@ export class CustomCompilerHost {
     transforms?: ts.CustomTransformers
     configFileOptions: ts.ParsedCommandLine
     oldProgram: ts.Program
+    newLine = ts.sys.newLine
     constructor(transforms?: ts.CustomTransformers, defaultCompilerOptions?: ts.CompilerOptions, rootNames: string[] = []) {
         this.transforms = transforms
         this.defaultCompilerOptions = defaultCompilerOptions
@@ -34,14 +34,14 @@ export class CustomCompilerHost {
     writeFile() {
         // fileName: string
     }
+    readDirectory = ts.sys.readDirectory.bind(ts.sys)
     getCanonicalFileName = getCanonicalFileName
     getDefaultLibLocation = getDefaultLibLocation
     getDefaultLibFileName = getDefaultLibFileName
     useCaseSensitiveFileNames() { return ts.sys.useCaseSensitiveFileNames; }
-    getNewLine() { return ts.sys.newLine }
+    getNewLine() { return this.newLine }
     getCurrentDirectory() { return __dirname; }
     fileExists(fileName: string) { return this.fileCache.has(fileName) || ts.sys.fileExists(fileName); }
-    getDiagnosticToViteErrorText = getDiagnosticToViteErrorText
     getCompilerOptions = getCompilerOptions
     emitFileCode = emitFileCode
     createProgram = createProgram

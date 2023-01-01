@@ -1,4 +1,4 @@
-import { CustomCompilerHost } from ".";
+import { CustomCompilerHost } from "./";
 
 export function getDiagnostics(this: CustomCompilerHost) {
     return [

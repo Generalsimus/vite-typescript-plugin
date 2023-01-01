@@ -1,14 +1,18 @@
 
 import ts from "typescript"
-import { CustomCompilerHost } from "."
+import { CustomCompilerHost } from "./";
 
 
 export function logDiagnosticsToViteError(this: CustomCompilerHost, vitePluginContext: any, diagnostics: ts.Diagnostic[]) {
-
     for (const diagnostic of diagnostics) {
-        const errorMessage = this.getDiagnosticToViteErrorText(diagnostic)
-        const code = diagnostic.code + ""
+        const errorMessage = "TS" + diagnostic.code + ": " + ts.flattenDiagnosticMessageText(diagnostic.messageText, this.newLine)
+        const code = diagnostic.file?.text
         const start = diagnostic.start
+        let position: number | undefined
+        if (code !== undefined && start !== undefined) {
+            position = (code.length - 1) - start
+        }
+
         switch (diagnostic.category) {
             case ts.DiagnosticCategory.Suggestion:
             case ts.DiagnosticCategory.Message:
@@ -16,16 +20,15 @@ export function logDiagnosticsToViteError(this: CustomCompilerHost, vitePluginCo
                 vitePluginContext.warn({
                     message: errorMessage,
                     code: code
-                }, start)
+                }, position)
                 break
             case ts.DiagnosticCategory.Error:
                 vitePluginContext.error({
                     message: errorMessage,
                     code: code
-                }, start)
+                }, position)
                 break
         }
 
     }
-
 };

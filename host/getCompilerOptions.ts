@@ -1,5 +1,5 @@
 import ts from "typescript"
-import { CustomCompilerHost } from ".";
+import { CustomCompilerHost } from "./";
 
 export function getCompilerOptions(this: CustomCompilerHost): ts.ParsedCommandLine {
     let configFileName = ts.findConfigFile(

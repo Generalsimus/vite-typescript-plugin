@@ -1,10 +1,10 @@
 import ts from "typescript"
-import { CustomCompilerHost } from ".";
+import { CustomCompilerHost } from "./";
 
 export function getSourceFile(this: CustomCompilerHost, fileName: string, languageVersionOrOptions: ts.ScriptTarget | ts.CreateSourceFileOptions, onError?: (message: string) => void, shouldCreateNewSourceFile?: boolean): ts.SourceFile | undefined {
     let sourceFileDetails = this.getCacheFileDetails(fileName);
     if (sourceFileDetails.sourceFile === undefined || shouldCreateNewSourceFile) {
-        let text
+        let text;
         try {
             text = this.readFile(fileName)
         } catch (e: any) {
