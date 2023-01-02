@@ -1,7 +1,7 @@
 import ts from "typescript"
 import { getDiagnostics } from "./getDiagnostics";
 import { createProgram } from "./createProgram";
-import { logDiagnosticsToViteError } from "./logDiagnosticsToViteError";
+import { logDiagnostics } from "./logDiagnostics";
 import { emitFileCode } from "./emitFileCode";
 import { getCompilerOptions } from "./getCompilerOptions";
 import { readFile } from "./readFile";
@@ -10,6 +10,9 @@ import { getSourceFile } from "./getSourceFile";
 import { getCanonicalFileName } from "./getCanonicalFileName";
 import { getDefaultLibLocation } from "./getDefaultLibLocation";
 import { getDefaultLibFileName } from "./getDefaultLibFileName";
+import { getCurrentDirectory } from "./getCurrentDirectory";
+import { getSourceFileByPath } from "./getSourceFileByPath";
+
 
 
 export class CustomCompilerHost {
@@ -29,6 +32,7 @@ export class CustomCompilerHost {
         this.oldProgram = this.createProgram(rootNames)
     }
     getSourceFile = getSourceFile
+    getSourceFileByPath = getSourceFileByPath
     getCacheFileDetails = getCacheFileDetails
     readFile = readFile
     writeFile() {
@@ -40,11 +44,11 @@ export class CustomCompilerHost {
     getDefaultLibFileName = getDefaultLibFileName
     useCaseSensitiveFileNames() { return ts.sys.useCaseSensitiveFileNames; }
     getNewLine() { return this.newLine }
-    getCurrentDirectory() { return __dirname; }
+    getCurrentDirectory = getCurrentDirectory
     fileExists(fileName: string) { return this.fileCache.has(fileName) || ts.sys.fileExists(fileName); }
     getCompilerOptions = getCompilerOptions
     emitFileCode = emitFileCode
     createProgram = createProgram
     getDiagnostics = getDiagnostics
-    logDiagnosticsToViteError = logDiagnosticsToViteError
+    logDiagnostics = logDiagnostics
 }

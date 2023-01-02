@@ -1,6 +1,6 @@
 {
   "name": "vite-typescript-plugin",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "author": {
     "name": "soso tsertsvadze",
     "email": "sosotsertsvadze2@gmail.com"
@@ -22,7 +22,20 @@
     "typescript": "*"
   },
   "dependencies": {
-    "typescript": "*"
+    "rollup": "*",
+    "typescript": "*",
+    "vite": "^*"
   },
-  "keywords": ["vite", "vitejs", "typescript", "ts", "javascript", "js", "plugin", "@vitejs/plugin-typescript", "vite-plugin-typescript", "vite-typescript-plugin"]
+  "keywords": [
+    "vite",
+    "vitejs",
+    "typescript",
+    "ts",
+    "javascript",
+    "js",
+    "plugin",
+    "@vitejs/plugin-typescript",
+    "vite-plugin-typescript",
+    "vite-typescript-plugin"
+  ]
 }

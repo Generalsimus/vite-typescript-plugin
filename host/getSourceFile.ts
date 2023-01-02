@@ -4,15 +4,19 @@ import { CustomCompilerHost } from "./";
 export function getSourceFile(this: CustomCompilerHost, fileName: string, languageVersionOrOptions: ts.ScriptTarget | ts.CreateSourceFileOptions, onError?: (message: string) => void, shouldCreateNewSourceFile?: boolean): ts.SourceFile | undefined {
     let sourceFileDetails = this.getCacheFileDetails(fileName);
     if (sourceFileDetails.sourceFile === undefined || shouldCreateNewSourceFile) {
-        let text;
+        let text: string | undefined;
         try {
-            text = this.readFile(fileName)
+            text = this.readFile(fileName, sourceFileDetails)
+            // console.log("🚀 --> file: getSourceFile.ts:10 --> getSourceFile --> fileName", { fileName, text });
+            if (text) {
+                return (sourceFileDetails.sourceFile = ts.createSourceFile(fileName, text, languageVersionOrOptions, true))
+            }
         } catch (e: any) {
             if (onError) {
                 onError(e.message);
             }
         }
-        sourceFileDetails.sourceFile = ts.createSourceFile(fileName, text || "", languageVersionOrOptions, true)
+        return ts.createSourceFile(fileName, "", languageVersionOrOptions, true)
     }
     return sourceFileDetails.sourceFile
-}
+}  
