@@ -12,6 +12,7 @@ import { getDefaultLibLocation } from "./getDefaultLibLocation";
 import { getDefaultLibFileName } from "./getDefaultLibFileName";
 import { getCurrentDirectory } from "./getCurrentDirectory";
 import { getSourceFileByPath } from "./getSourceFileByPath";
+import { resolveModuleNames } from "./resolveModuleNames";
 
 
 
@@ -19,14 +20,17 @@ export class CustomCompilerHost {
     fileCache = new Map<string, {
         sourceFile: ts.SourceFile | undefined,
         code: string | undefined
+        modules: (ts.ResolvedModule | undefined)[] | undefined
     }>()
-    defaultCompilerOptions?: ts.CompilerOptions = {}
-    transforms?: ts.CustomTransformers
+    defaultCompilerOptions: ts.CompilerOptions = {}
+    defaultTsConfigPath?: string
+    transformers?: ts.CustomTransformers
     configFileOptions: ts.ParsedCommandLine
     oldProgram: ts.Program
     newLine = ts.sys.newLine
-    constructor(transforms?: ts.CustomTransformers, defaultCompilerOptions?: ts.CompilerOptions, rootNames: string[] = []) {
-        this.transforms = transforms
+    constructor(transformers?: ts.CustomTransformers, defaultCompilerOptions: ts.CompilerOptions = {}, rootNames: string[] = [], defaultTsConfigPath?: string) {
+        this.transformers = transformers
+        this.defaultTsConfigPath = defaultTsConfigPath
         this.defaultCompilerOptions = defaultCompilerOptions
         this.configFileOptions = this.getCompilerOptions()
         this.oldProgram = this.createProgram(rootNames)
@@ -42,10 +46,17 @@ export class CustomCompilerHost {
     getCanonicalFileName = getCanonicalFileName
     getDefaultLibLocation = getDefaultLibLocation
     getDefaultLibFileName = getDefaultLibFileName
-    useCaseSensitiveFileNames() { return ts.sys.useCaseSensitiveFileNames; }
-    getNewLine() { return this.newLine }
+    useCaseSensitiveFileNames() {
+        return ts.sys.useCaseSensitiveFileNames;
+    }
+    getNewLine() {
+        return this.newLine
+    }
     getCurrentDirectory = getCurrentDirectory
-    fileExists(fileName: string) { return this.fileCache.has(fileName) || ts.sys.fileExists(fileName); }
+    fileExists(fileName: string) {
+        return this.fileCache.has(fileName) || ts.sys.fileExists(fileName);
+    }
+    resolveModuleNames = resolveModuleNames
     getCompilerOptions = getCompilerOptions
     emitFileCode = emitFileCode
     createProgram = createProgram

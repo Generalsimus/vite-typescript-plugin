@@ -3,6 +3,7 @@ import { CustomCompilerHost } from "./";
 
 
 export function readFile(this: CustomCompilerHost, fileName: string, fileDetails?: ReturnType<CustomCompilerHost["getCacheFileDetails"]>) {
+    
     fileDetails ||= this.getCacheFileDetails(fileName);
 
 
