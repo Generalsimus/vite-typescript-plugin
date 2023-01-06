@@ -7,6 +7,7 @@ export function createProgram(this: CustomCompilerHost, rootNames: string[]) {
         options: this.configFileOptions.options,
         oldProgram: this.oldProgram,
         host: this,
-        projectReferences: this.configFileOptions.projectReferences
+        projectReferences: this.configFileOptions.projectReferences,
+        configFileParsingDiagnostics: this.configFileOptions.errors
     });
 }

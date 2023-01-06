@@ -1,22 +1,32 @@
+import ts from "typescript";
 import { CustomCompilerHost } from "./";
+import { normalizePath } from "../utils/normalizePath";
 
+const mapFileRegExp = /(\.map)$/i
+const jsFileRegExp = /(\.(([cm]?jsx?)|json))$/i
 export function emitFileCode(this: CustomCompilerHost, fileName: string) {
     let outputText: string = "";
     let sourceMapText;
-    // console.log("🚀 --> file: emitFileCode.ts:7 --> this.oldProgram.emit --> this.oldProgram.getSourceFile(fileName)", this.oldProgram.getSourceFile(fileName));
+    type Path = string
+    type Code = string
+    const emitFiles: Record<Path, Code> = {}
+    const sourceFile = this.oldProgram.getSourceFile(fileName)
 
-    this.oldProgram.emit(this.oldProgram.getSourceFile(fileName), (name, text) => {
-        // console.log("🚀 --> file: emitFileCode.ts:7 --> this.oldProgram.emit --> text", { name, text });
-        if (name.endsWith(".map")) {
+
+    this.oldProgram.emit(sourceFile, (name, text) => {
+        if (mapFileRegExp.test(name)) {
             sourceMapText = text;
-        }
-        else {
+        } else if (jsFileRegExp.test(name)) {
             outputText = text;
+        } else {
+            emitFiles[normalizePath(name)] = text
         }
     }, undefined, undefined, this.transformers);
 
     return {
         code: outputText,
-        map: sourceMapText
+        map: sourceMapText,
+        diagnostics: ts.getPreEmitDiagnostics(this.oldProgram, sourceFile),
+        emitFiles
     }
 }

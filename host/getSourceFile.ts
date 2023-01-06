@@ -6,8 +6,7 @@ export function getSourceFile(this: CustomCompilerHost, fileName: string, langua
     if (sourceFileDetails.sourceFile === undefined || shouldCreateNewSourceFile) {
         let text: string | undefined;
         try {
-            text = this.readFile(fileName, sourceFileDetails)
-            // console.log("🚀 --> file: getSourceFile.ts:10 --> getSourceFile --> fileName", { fileName, text });
+            text = this.readFile(fileName)
             if (text) {
                 return (sourceFileDetails.sourceFile = ts.createSourceFile(fileName, text, languageVersionOrOptions, true))
             }

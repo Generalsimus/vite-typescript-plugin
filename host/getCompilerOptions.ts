@@ -2,16 +2,12 @@ import ts from "typescript"
 import { CustomCompilerHost } from "./";
 import path from "path"
 import { normalizePath } from "../utils/normalizePath";
+import { watchFile } from 'fs';
+
+
 
 export function getCompilerOptions(this: CustomCompilerHost): ts.ParsedCommandLine {
-    let configFileName = this.defaultTsConfigPath || ts.findConfigFile(
-        this.getCurrentDirectory(),
-        (fileName: string) => this.fileExists(fileName)
-    );
-
-    const configFile = ts.readConfigFile(normalizePath(configFileName || ""), ts.sys.readFile);
-
-
+    const configFile = ts.readConfigFile(this.tsConfigPath, ts.sys.readFile);
     const compilerOptions = ts.parseJsonConfigFileContent(
         configFile.config,
         ts.sys,
@@ -25,7 +21,7 @@ export function getCompilerOptions(this: CustomCompilerHost): ts.ParsedCommandLi
     }
     return {
         ...compilerOptions,
-        options: { ...compilerOptions.options, ...this.defaultCompilerOptions },
+        options: { ...compilerOptions.options, ...(this.defaultCompilerOptions || {}) },
         errors: errors
     }
 }

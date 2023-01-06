@@ -1,60 +1,64 @@
 
 import ts from "typescript"
-import { CustomCompilerHost } from "./host/"
-import { PluginContext, Plugin } from "rollup"
+import { CustomCompilerHost, HostOptions } from "./host/"
 import path from "path"
-import { FSWatcher, PluginOption } from "vite"
+import { PluginOption } from "vite"
 import fs from "fs"
-import { fileURLToPath } from 'url'
-import resolve from "resolve/sync"
 import { normalizePath } from "./utils/normalizePath"
-// import { relative, resolve, sep } from 'path';
 
-// import type { Plugin } from 'rollup';
-// import { createFilter } from '@rollup/pluginutils';
-// import { ESLint } from 'eslint';
-
-// import type { RollupEslintOptions } from '../types';
-
-// function normalizePath(id: string) {
-//   return relative(process.cwd(), id).split(sep).join('/');
-// }
-// function normalizePath(fileName) {
-//     return fileName.split(path.win32.sep).join(path.posix.sep);
-// }
-export interface Options {
-    options?: ts.CompilerOptions
+export interface Options extends HostOptions {
     name?: string | "typescript"
     test?: RegExp
-    transformers?: ts.CustomTransformers
 }
-// const createPlugin = (options: Options = {}): Plugin => {
 const createPlugin = (options: Options = {}): PluginOption => {
-    let workerHost = new CustomCompilerHost(options.transformers, options.options)
+    let workerHost = new CustomCompilerHost(options)
 
     const name = options.name || "typescript"
     const testFileName = options.test || /\.(((t|j)sx?)|json)$/i
+    const emitOuterFiles: ReturnType<CustomCompilerHost["emitFileCode"]>["emitFiles"] = {}
     return {
         name: name,
-        enforce: 'pre',
-        async load(id: string) {
-            const fileName = normalizePath(id)
+        configureServer(server) {
+            if (fs.existsSync(workerHost.tsConfigPath)) {
+                fs.watch(workerHost.tsConfigPath, () => {
+                    workerHost.fileCache.clear();
+                    workerHost.tsConfigPath = workerHost.getTsConfigFilePath();
+                    workerHost.configFileOptions = workerHost.getCompilerOptions();
+                });
+            }
+            server.watcher.on('unlink', (path) => {
+                workerHost.fileCache.delete(normalizePath(path))
+            });
+        },
+        load(id: string) {
+            const fileName = normalizePath(id);
 
             if (testFileName.test(fileName)) {
-                const rootNames = [fileName]
-
                 workerHost.fileCache.delete(fileName);
-                workerHost.createProgram(rootNames);
-
+                workerHost.createProgram([fileName]);
                 const output = workerHost.emitFileCode(fileName);
-
-                workerHost.logDiagnostics(this, workerHost.getDiagnostics());
-
+                if (output.diagnostics.length !== 0) {
+                    workerHost.logDiagnose(this, output.diagnostics);
+                }
+                if (!this.meta.watchMode) {
+                    Object.assign(emitOuterFiles, output.emitFiles);
+                }
                 return output
             }
 
             return null
         },
+        generateBundle(outputOptions) {
+            if (outputOptions.dir) {
+                for (const emitFilePath in emitOuterFiles) {
+                    this.emitFile({
+                        fileName: path.relative(outputOptions.dir, emitFilePath),
+                        source: emitOuterFiles[emitFilePath],
+                        type: 'asset'
+                    })
+                }
+            }
+        }
     }
 }
 export { createPlugin, createPlugin as default }

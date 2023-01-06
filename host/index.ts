@@ -1,7 +1,7 @@
 import ts from "typescript"
-import { getDiagnostics } from "./getDiagnostics";
+// import { getDiagnostics } from "./getDiagnostics";
 import { createProgram } from "./createProgram";
-import { logDiagnostics } from "./logDiagnostics";
+import { logDiagnose } from "./logDiagnose";
 import { emitFileCode } from "./emitFileCode";
 import { getCompilerOptions } from "./getCompilerOptions";
 import { readFile } from "./readFile";
@@ -13,8 +13,14 @@ import { getDefaultLibFileName } from "./getDefaultLibFileName";
 import { getCurrentDirectory } from "./getCurrentDirectory";
 import { getSourceFileByPath } from "./getSourceFileByPath";
 import { resolveModuleNames } from "./resolveModuleNames";
+import { getTsConfigFilePath } from "./getConfigFilePath";
 
 
+export interface HostOptions {
+    options?: ts.CompilerOptions
+    tsConfigPath?: string
+    transformers?: ts.CustomTransformers
+}
 
 export class CustomCompilerHost {
     fileCache = new Map<string, {
@@ -22,16 +28,18 @@ export class CustomCompilerHost {
         code: string | undefined
         modules: (ts.ResolvedModule | undefined)[] | undefined
     }>()
-    defaultCompilerOptions: ts.CompilerOptions = {}
+    defaultCompilerOptions?: ts.CompilerOptions
     defaultTsConfigPath?: string
+    tsConfigPath: string
     transformers?: ts.CustomTransformers
     configFileOptions: ts.ParsedCommandLine
     oldProgram: ts.Program
     newLine = ts.sys.newLine
-    constructor(transformers?: ts.CustomTransformers, defaultCompilerOptions: ts.CompilerOptions = {}, rootNames: string[] = [], defaultTsConfigPath?: string) {
-        this.transformers = transformers
-        this.defaultTsConfigPath = defaultTsConfigPath
-        this.defaultCompilerOptions = defaultCompilerOptions
+    constructor(hostOptions: HostOptions, rootNames: string[] = []) {
+        this.defaultTsConfigPath = hostOptions.tsConfigPath
+        this.defaultCompilerOptions = hostOptions.options
+        this.transformers = hostOptions.transformers
+        this.tsConfigPath = this.getTsConfigFilePath()
         this.configFileOptions = this.getCompilerOptions()
         this.oldProgram = this.createProgram(rootNames)
     }
@@ -56,10 +64,10 @@ export class CustomCompilerHost {
     fileExists(fileName: string) {
         return this.fileCache.has(fileName) || ts.sys.fileExists(fileName);
     }
+    getTsConfigFilePath = getTsConfigFilePath
     resolveModuleNames = resolveModuleNames
     getCompilerOptions = getCompilerOptions
     emitFileCode = emitFileCode
     createProgram = createProgram
-    getDiagnostics = getDiagnostics
-    logDiagnostics = logDiagnostics
+    logDiagnose = logDiagnose
 }
