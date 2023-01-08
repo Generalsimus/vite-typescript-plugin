@@ -12,11 +12,11 @@ import { createPlugin } from "vite-typescript-plugin"
 export default defineConfig({
   plugins: [
     createPlugin({
-      name:,          // plugin name 
-      options:,       // ts.CompilerOptions 
-      tsConfigPath:  // tsConfig file name
-      test:,          // file test regexp 
-      transforms:,    // ts.CustomTransformers
+      name,          // plugin name 
+      options,       // ts.CompilerOptions 
+      tsConfigPath   // tsConfig file name
+      test,          // file test regexp 
+      transforms,    // ts.CustomTransformers
     })
   ],
 }) 
