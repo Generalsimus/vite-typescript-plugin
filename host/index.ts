@@ -1,5 +1,4 @@
 import ts from "typescript"
-// import { getDiagnostics } from "./getDiagnostics";
 import { createProgram } from "./createProgram";
 import { logDiagnose } from "./logDiagnose";
 import { emitFileCode } from "./emitFileCode";

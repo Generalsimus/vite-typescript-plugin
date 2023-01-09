@@ -1,4 +1,5 @@
+import { normalizePath } from "../utils/normalizePath";
 
-const processDirectory = process.cwd();
-// console.log("🚀 --> file: getCurrentDirectory.ts:3 --> processDirectory", processDirectory);
+const processDirectory = normalizePath(process.cwd());
+
 export function getCurrentDirectory() { return processDirectory }
