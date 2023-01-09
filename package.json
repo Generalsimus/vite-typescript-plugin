@@ -1,10 +1,11 @@
 {
   "name": "vite-typescript-plugin",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": {
     "name": "soso tsertsvadze",
     "email": "sosotsertsvadze2@gmail.com"
   },
+  "description": "A Vite plugin for seamless integration between Vite and Typescript.",
   "main": "./dist/index.js",
   "repository": {
     "type": "git",
