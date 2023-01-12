@@ -1,7 +1,7 @@
 import ts from "typescript"
 import path from "path"
 import { CustomCompilerHost } from "./";
-import { normalizePath } from "../utils/normalizePath";
+import { normalizePath } from "./utils/normalizePath";
 
 
 export function getDefaultLibFileName(this: CustomCompilerHost, options: ts.CompilerOptions) {

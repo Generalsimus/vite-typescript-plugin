@@ -1,4 +1,4 @@
-import { normalizePath } from "../utils/normalizePath";
+import { normalizePath } from "./utils/normalizePath";
 
 const processDirectory = normalizePath(process.cwd());
 

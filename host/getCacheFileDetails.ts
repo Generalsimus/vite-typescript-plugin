@@ -6,7 +6,8 @@ export function getCacheFileDetails(this: CustomCompilerHost, fileName: string) 
         this.fileCache.set(fileName, fileDetail = {
             sourceFile: undefined,
             code: undefined,
-            modules: undefined
+            modules: undefined,
+            emitFileValue: undefined
         })
     }
     return fileDetail

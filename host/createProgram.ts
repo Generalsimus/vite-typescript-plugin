@@ -1,9 +1,9 @@
 import { CustomCompilerHost } from "./";
 import ts from "typescript"
 
-export function createProgram(this: CustomCompilerHost, rootNames: string[]) {
+export function createProgram(this: CustomCompilerHost) {
     return this.oldProgram = ts.createProgram({
-        rootNames: rootNames,
+        rootNames: this.rootNames,
         options: this.configFileOptions.options,
         oldProgram: this.oldProgram,
         host: this,

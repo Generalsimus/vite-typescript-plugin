@@ -1,21 +1,33 @@
 
 import ts from "typescript"
-import { CustomCompilerHost, HostOptions } from "./host/"
+import { CustomCompilerHost, HostOptions } from "./host"
 import path from "path"
 import { PluginOption } from "vite"
 import fs from "fs"
-import { normalizePath } from "./utils/normalizePath"
+import { normalizePath } from "./host/utils/normalizePath"
+import { PluginContext, RollupError } from "rollup"
 
 export interface Options extends HostOptions {
     name?: string | "typescript"
     test?: RegExp
 }
 const createPlugin = (options: Options = {}): PluginOption => {
-    let workerHost = new CustomCompilerHost(options)
+    const name = options.name || "typescript";
+    const testFileName = options.test || /\.(((t|j)sx?)|json)$/i;
+    const emitOuterFiles: ReturnType<CustomCompilerHost["emitFileCode"]>["emitFiles"] = {};
+    let workerHost = new CustomCompilerHost(options);
+    const logDiagnose = (vitePluginContext: PluginContext, diagnostics: readonly ts.Diagnostic[]) => {
+        if (diagnostics.length !== 0) {
+            const error: RollupError = {
+                message: workerHost.newLine + ts.formatDiagnosticsWithColorAndContext(diagnostics, workerHost),
+                pluginCode: "KIX"
+            };
 
-    const name = options.name || "typescript"
-    const testFileName = options.test || /\.(((t|j)sx?)|json)$/i
-    const emitOuterFiles: ReturnType<CustomCompilerHost["emitFileCode"]>["emitFiles"] = {}
+            vitePluginContext.error(error);
+
+        }
+    };
+    const rootNames: string[] = []
     return {
         name: name,
         configureServer(server) {
@@ -34,11 +46,9 @@ const createPlugin = (options: Options = {}): PluginOption => {
             const fileName = normalizePath(id);
 
             if (testFileName.test(fileName)) {
-                workerHost.fileCache.delete(fileName);
-                workerHost.createProgram([fileName]);
-                const output = workerHost.emitFileCode(fileName);
+                const output = workerHost.emitFileIfChanged(fileName);
                 if (output.diagnostics.length !== 0) {
-                    workerHost.logDiagnose(this, output.diagnostics);
+                    logDiagnose(this, output.diagnostics);
                 }
                 if (!this.meta.watchMode) {
                     Object.assign(emitOuterFiles, output.emitFiles);

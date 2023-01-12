@@ -1,7 +1,7 @@
 import ts from "typescript"
 import { CustomCompilerHost } from "./";
 import path from "path"
-import { normalizePath } from "../utils/normalizePath";
+import { normalizePath } from "./utils/normalizePath";
 import { watchFile } from 'fs';
 
 
@@ -15,6 +15,6 @@ export function getTsConfigFilePath(this: CustomCompilerHost) {
             currentDirectory,
             (fileName: string) => this.fileExists(fileName)
         )
-    }
+    } 
     return normalizePath(configFileName || "");
 }

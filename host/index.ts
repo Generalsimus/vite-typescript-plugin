@@ -1,7 +1,6 @@
 import ts from "typescript"
 import { createProgram } from "./createProgram";
-import { logDiagnose } from "./logDiagnose";
-import { emitFileCode } from "./emitFileCode";
+import { EmitFileValueType, emitFileCode } from "./emitFileCode";
 import { getCompilerOptions } from "./getCompilerOptions";
 import { readFile } from "./readFile";
 import { getCacheFileDetails } from "./getCacheFileDetails";
@@ -25,7 +24,8 @@ export class CustomCompilerHost {
     fileCache = new Map<string, {
         sourceFile: ts.SourceFile | undefined,
         code: string | undefined
-        modules: (ts.ResolvedModule | undefined)[] | undefined
+        modules: (ts.ResolvedModule | undefined)[] | undefined,
+        emitFileValue: EmitFileValueType | undefined
     }>()
     defaultCompilerOptions?: ts.CompilerOptions
     defaultTsConfigPath?: string
@@ -34,20 +34,52 @@ export class CustomCompilerHost {
     configFileOptions: ts.ParsedCommandLine
     oldProgram: ts.Program
     newLine = ts.sys.newLine
+    rootNames: string[] = []
     constructor(hostOptions: HostOptions, rootNames: string[] = []) {
+        this.rootNames = rootNames
         this.defaultTsConfigPath = hostOptions.tsConfigPath
         this.defaultCompilerOptions = hostOptions.options
         this.transformers = hostOptions.transformers
         this.tsConfigPath = this.getTsConfigFilePath()
         this.configFileOptions = this.getCompilerOptions()
-        this.oldProgram = this.createProgram(rootNames)
+        this.oldProgram = this.createProgram()
     }
     getSourceFile = getSourceFile
     getSourceFileByPath = getSourceFileByPath
     getCacheFileDetails = getCacheFileDetails
     readFile = readFile
-    writeFile() {
-        // fileName: string
+    emitFileIfChanged(fileName: string, code?: string) {
+        const currentValue = this.fileCache.get(fileName);
+
+
+        if (currentValue?.emitFileValue !== undefined) {
+            const preCode = currentValue.code;
+            currentValue.sourceFile = (currentValue.code = undefined);
+            const newCode = code || (code = this.readFile(fileName));
+            // console.log("AAAA", {
+            //     preCode,
+            //     newCode
+            // })
+            if (preCode == newCode) {
+                return currentValue.emitFileValue
+            }
+        }
+
+        this.fileCache.delete(fileName);
+        const cacheFileDetails = this.getCacheFileDetails(fileName);
+        cacheFileDetails.code = code;
+        if (currentValue === undefined) {
+            this.rootNames = [...new Set([...this.rootNames, fileName])];
+        }
+        this.createProgram();
+
+
+
+        return cacheFileDetails.emitFileValue = this.emitFileCode(fileName);
+    }
+    writeFile(fileName: string) {
+        console.log("🚀 --> file:EEEEEEEEE --> fileName", fileName);
+
     }
     readDirectory = ts.sys.readDirectory.bind(ts.sys)
     getCanonicalFileName = getCanonicalFileName
@@ -68,5 +100,4 @@ export class CustomCompilerHost {
     getCompilerOptions = getCompilerOptions
     emitFileCode = emitFileCode
     createProgram = createProgram
-    logDiagnose = logDiagnose
 }
