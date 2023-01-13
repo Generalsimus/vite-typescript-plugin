@@ -1,4 +1,4 @@
-# [vite typescript plugin](https://www.npmjs.com/package/vite-typescript-plugin)
+# [Vite Typescript Plugin](https://www.npmjs.com/package/vite-typescript-plugin)
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm href][standard-js-src]][standard-js-href]
@@ -12,11 +12,11 @@ import { createPlugin } from "vite-typescript-plugin"
 export default defineConfig({
   plugins: [
     createPlugin({
-      name,          // plugin name 
-      options,       // ts.CompilerOptions 
-      tsConfigPath   // tsConfig file name
-      test,          // file test regexp 
-      transforms,    // ts.CustomTransformers
+      name,              // plugin name 
+      compilerOptions,   // ts.CompilerOptions 
+      tsConfigPath       // tsConfig file name
+      test,              // file test regexp 
+      transforms,        // ts.CustomTransformers
     })
   ],
 }) 
