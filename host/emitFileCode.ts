@@ -1,5 +1,5 @@
 import ts from "typescript";
-import { CustomCompilerHost } from "./";
+import { CustomCompilerHost } from ".";
 import { normalizePath } from "./utils/normalizePath";
 
 

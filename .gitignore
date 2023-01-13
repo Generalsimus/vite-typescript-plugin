@@ -1,3 +1,5 @@
 /node_modules
 /dist
-package-lock.json
+/package-lock.json
+/tsconfig.tsbuildinfo
+/dist/tsconfig.tsbuildinfo

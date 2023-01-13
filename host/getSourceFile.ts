@@ -1,5 +1,5 @@
 import ts from "typescript"
-import { CustomCompilerHost } from "./";
+import { CustomCompilerHost } from ".";
 
 export function getSourceFile(this: CustomCompilerHost, fileName: string, languageVersionOrOptions: ts.ScriptTarget | ts.CreateSourceFileOptions, onError?: (message: string) => void, shouldCreateNewSourceFile?: boolean): ts.SourceFile | undefined {
     let sourceFileDetails = this.getCacheFileDetails(fileName);

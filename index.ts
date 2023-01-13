@@ -27,7 +27,7 @@ const createPlugin = (options: Options = {}): PluginOption => {
 
         }
     };
-    const rootNames: string[] = []
+
     return {
         name: name,
         configureServer(server) {

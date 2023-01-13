@@ -1,4 +1,4 @@
-import { CustomCompilerHost } from "./";
+import { CustomCompilerHost } from ".";
 
 export function getCacheFileDetails(this: CustomCompilerHost, fileName: string) {
     let fileDetail = this.fileCache.get(fileName)

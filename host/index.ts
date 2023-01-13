@@ -12,6 +12,7 @@ import { getCurrentDirectory } from "./getCurrentDirectory";
 import { getSourceFileByPath } from "./getSourceFileByPath";
 import { resolveModuleNames } from "./resolveModuleNames";
 import { getTsConfigFilePath } from "./getConfigFilePath";
+import { emitFileIfChanged } from "./emitFileIfChanged";
 
 
 export interface HostOptions {
@@ -48,37 +49,9 @@ export class CustomCompilerHost {
     getSourceFileByPath = getSourceFileByPath
     getCacheFileDetails = getCacheFileDetails
     readFile = readFile
-    emitFileIfChanged(fileName: string, code?: string) {
-        const currentValue = this.fileCache.get(fileName);
-
-
-        if (currentValue?.emitFileValue !== undefined) {
-            const preCode = currentValue.code;
-            currentValue.sourceFile = (currentValue.code = undefined);
-            const newCode = code || (code = this.readFile(fileName));
-            // console.log("AAAA", {
-            //     preCode,
-            //     newCode
-            // })
-            if (preCode == newCode) {
-                return currentValue.emitFileValue
-            }
-        }
-
-        this.fileCache.delete(fileName);
-        const cacheFileDetails = this.getCacheFileDetails(fileName);
-        cacheFileDetails.code = code;
-        if (currentValue === undefined) {
-            this.rootNames = [...new Set([...this.rootNames, fileName])];
-        }
-        this.createProgram();
-
-
-
-        return cacheFileDetails.emitFileValue = this.emitFileCode(fileName);
-    }
+    emitFileIfChanged = emitFileIfChanged
     writeFile(fileName: string) {
-        console.log("🚀 --> file:EEEEEEEEE --> fileName", fileName);
+        // console.log("🚀 --> file:EEEEEEEEE --> fileName", fileName);
 
     }
     readDirectory = ts.sys.readDirectory.bind(ts.sys)

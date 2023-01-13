@@ -1,4 +1,4 @@
-import { CustomCompilerHost } from "./";
+import { CustomCompilerHost } from ".";
 import ts from "typescript"
 
 export function createProgram(this: CustomCompilerHost) {
