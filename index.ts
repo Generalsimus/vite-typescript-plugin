@@ -42,11 +42,10 @@ const createPlugin = (options: Options = {}): PluginOption => {
                 workerHost.fileCache.delete(normalizePath(path))
             });
         },
-        load(id: string) {
+        transform(code, id, options) {
             const fileName = normalizePath(id);
-
             if (testFileName.test(fileName)) {
-                const output = workerHost.emitFileIfChanged(fileName);
+                const output = workerHost.emitFileIfChanged(fileName, code);
                 if (output.diagnostics.length !== 0) {
                     logDiagnose(this, output.diagnostics);
                 }
@@ -56,7 +55,9 @@ const createPlugin = (options: Options = {}): PluginOption => {
                 return output
             }
 
-            return null
+            return {
+                code: code
+            }
         },
         generateBundle(outputOptions) {
             if (outputOptions.dir) {
@@ -71,4 +72,5 @@ const createPlugin = (options: Options = {}): PluginOption => {
         }
     }
 }
+export * from "./host"
 export { createPlugin, createPlugin as default }
