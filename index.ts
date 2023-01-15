@@ -30,6 +30,7 @@ const createPlugin = (options: Options = {}): PluginOption => {
 
     return {
         name: name,
+        enforce: "pre",
         configureServer(server) {
             if (fs.existsSync(workerHost.tsConfigPath)) {
                 fs.watch(workerHost.tsConfigPath, () => {
@@ -44,8 +45,10 @@ const createPlugin = (options: Options = {}): PluginOption => {
         },
         transform(code, id, options) {
             const fileName = normalizePath(id);
+
             if (testFileName.test(fileName)) {
                 const output = workerHost.emitFileIfChanged(fileName, code);
+
                 if (output.diagnostics.length !== 0) {
                     logDiagnose(this, output.diagnostics);
                 }
