@@ -81,5 +81,3 @@ const createTsPlugin = (options: Options = {}): PluginOption => {
 const createPlugin = createTsPlugin
 export * from "./host"
 export { createPlugin, createTsPlugin, createTsPlugin as default }
-
-createPlugin()
