@@ -6,12 +6,12 @@
 ### vite.config
 ```js
 import { defineConfig } from 'vite'
-import { createPlugin } from "vite-typescript-plugin"
+import { createTsPlugin } from "vite-typescript-plugin"
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    createPlugin({
+    createTsPlugin({
       name,              // plugin name 
       compilerOptions,   // ts.CompilerOptions 
       tsConfigPath       // tsConfig file name

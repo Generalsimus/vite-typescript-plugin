@@ -11,7 +11,7 @@ export interface Options extends HostOptions {
     name?: string | "typescript"
     test?: RegExp
 }
-const createPlugin = (options: Options = {}): PluginOption => {
+const createTsPlugin = (options: Options = {}): PluginOption => {
     const name = options.name || "typescript";
     const testFileName = options.test || /\.(((t|j)sx?)|json)$/i;
     const emitOuterFiles: ReturnType<CustomCompilerHost["emitFileCode"]>["emitFiles"] = {};
@@ -75,5 +75,11 @@ const createPlugin = (options: Options = {}): PluginOption => {
         }
     }
 }
+/**
+ @deprecated use createTsPlugin()
+*/
+const createPlugin = createTsPlugin
 export * from "./host"
-export { createPlugin, createPlugin as default }
+export { createPlugin, createTsPlugin, createTsPlugin as default }
+
+createPlugin()

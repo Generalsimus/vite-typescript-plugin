@@ -1,6 +1,6 @@
 {
   "name": "vite-typescript-plugin",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "author": {
     "name": "soso tsertsvadze",
     "email": "sosotsertsvadze2@gmail.com"
@@ -20,12 +20,12 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "typescript": "*"
+    "typescript": "*",
+    "rollup": "*",
+    "vite": "*"
   },
   "dependencies": {
-    "rollup": "*",
-    "typescript": "*",
-    "vite": "*"
+    "typescript": "*"
   },
   "keywords": [
     "vite",
